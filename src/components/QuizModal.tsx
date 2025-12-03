@@ -3,6 +3,32 @@
 import React, { useState, useEffect } from "react";
 import { Question, DomainMastery, AnswerRecord } from "@/types";
 
+// Clean up LaTeX notation for display
+function cleanLatex(text: string): string {
+  if (!text) return text;
+  return text
+    .replace(/\$([^$]+)\$/g, "$1")
+    .replace(/\\\(([^)]+)\\\)/g, "$1")
+    .replace(/\\\[([^\]]+)\\\]/g, "$1")
+    .replace(/\\frac\{([^}]+)\}\{([^}]+)\}/g, "($1/$2)")
+    .replace(/\\sqrt\{([^}]+)\}/g, "√($1)")
+    .replace(/\\times/g, "×")
+    .replace(/\\div/g, "÷")
+    .replace(/\\pm/g, "±")
+    .replace(/\\leq/g, "≤")
+    .replace(/\\geq/g, "≥")
+    .replace(/\\neq/g, "≠")
+    .replace(/\\cdot/g, "·")
+    .replace(/\^(\{[^}]+\}|\w)/g, (_, exp) => `^${exp.replace(/[{}]/g, "")}`)
+    .replace(/_(\{[^}]+\}|\w)/g, (_, sub) => `_${sub.replace(/[{}]/g, "")}`)
+    .replace(/\\text\{([^}]+)\}/g, "$1")
+    .replace(/\\\\/g, " ")
+    .replace(/\\,/g, " ")
+    .replace(/\\;/g, " ")
+    .replace(/\\quad/g, "  ")
+    .replace(/\\qquad/g, "    ");
+}
+
 interface QuizModalProps {
   isOpen: boolean;
   onClose: () => void;
@@ -104,7 +130,7 @@ export default function QuizModal({
         {/* Question */}
         <div className="p-6">
           <p className="text-[var(--foreground)] mb-6 leading-relaxed">
-            {currentQuestion.stem}
+            {cleanLatex(currentQuestion.stem)}
           </p>
 
           {/* Choices */}
@@ -144,7 +170,7 @@ export default function QuizModal({
                     }`}>
                       {choice.id.toUpperCase()}
                     </span>
-                    <span className="text-[var(--foreground)]">{choice.label}</span>
+                    <span className="text-[var(--foreground)]">{cleanLatex(choice.label)}</span>
                   </div>
                 </button>
               );
@@ -164,7 +190,7 @@ export default function QuizModal({
                 </span>
               </div>
               <p className="text-sm text-[var(--muted-foreground)] mt-1">
-                {currentQuestion.explanation}
+                {cleanLatex(currentQuestion.explanation)}
               </p>
             </div>
           )}

@@ -24,6 +24,36 @@ import {
   BarChart3,
 } from "lucide-react";
 
+// Clean up LaTeX notation for display
+function cleanLatex(text: string): string {
+  if (!text) return text;
+  return text
+    // Remove dollar sign delimiters (inline math)
+    .replace(/\$([^$]+)\$/g, "$1")
+    // Remove \( \) delimiters (inline math)
+    .replace(/\\\(([^)]+)\\\)/g, "$1")
+    // Remove \[ \] delimiters (display math)
+    .replace(/\\\[([^\]]+)\\\]/g, "$1")
+    // Clean up common LaTeX commands
+    .replace(/\\frac\{([^}]+)\}\{([^}]+)\}/g, "($1/$2)")
+    .replace(/\\sqrt\{([^}]+)\}/g, "√($1)")
+    .replace(/\\times/g, "×")
+    .replace(/\\div/g, "÷")
+    .replace(/\\pm/g, "±")
+    .replace(/\\leq/g, "≤")
+    .replace(/\\geq/g, "≥")
+    .replace(/\\neq/g, "≠")
+    .replace(/\\cdot/g, "·")
+    .replace(/\^(\{[^}]+\}|\w)/g, (_, exp) => `^${exp.replace(/[{}]/g, "")}`)
+    .replace(/_(\{[^}]+\}|\w)/g, (_, sub) => `_${sub.replace(/[{}]/g, "")}`)
+    .replace(/\\text\{([^}]+)\}/g, "$1")
+    .replace(/\\\\/g, " ")
+    .replace(/\\,/g, " ")
+    .replace(/\\;/g, " ")
+    .replace(/\\quad/g, "  ")
+    .replace(/\\qquad/g, "    ");
+}
+
 // Exam configuration types
 type ExamSection = "all" | "math" | "reading_writing";
 type ExamMode = "setup" | "exam" | "review" | "results";
@@ -524,7 +554,7 @@ export default function PracticeExam() {
             {/* Question Content */}
             <div className="bg-[var(--card)] rounded-xl border border-[var(--border)] p-6 mb-6">
               <p className="text-lg text-[var(--foreground)] leading-relaxed whitespace-pre-wrap">
-                {currentQuestion.stem}
+                {cleanLatex(currentQuestion.stem)}
               </p>
             </div>
 
@@ -563,7 +593,7 @@ export default function PracticeExam() {
                     }`}>
                       {choice.id.toUpperCase()}
                     </span>
-                    <span className="flex-1 text-[var(--foreground)]">{choice.label}</span>
+                    <span className="flex-1 text-[var(--foreground)]">{cleanLatex(choice.label)}</span>
                     {isReview && isCorrect && <CheckCircle2 className="w-5 h-5 text-emerald-500" />}
                     {isReview && isSelected && !isCorrect && <XCircle className="w-5 h-5 text-red-500" />}
                   </button>
@@ -578,7 +608,7 @@ export default function PracticeExam() {
                   <AlertCircle className="w-5 h-5" />
                   Explanation
                 </div>
-                <p className="text-blue-800">{currentQuestion.explanation}</p>
+                <p className="text-blue-800">{cleanLatex(currentQuestion.explanation)}</p>
               </div>
             )}
 
