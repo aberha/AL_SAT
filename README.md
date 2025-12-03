@@ -2,7 +2,7 @@
 
 A comprehensive SAT prep dashboard built with Next.js, React, and TypeScript. This project demonstrates product thinking, UX design, and technical execution for an adaptive learning platform.
 
-**[Live Demo](https://al-sat.vercel.app)** · **[Source Code](https://github.com/aberha/AL_SAT)**
+**[Live Demo](https://satprepper.vercel.app)** · **[Source Code](https://github.com/aberha/AL_SAT)**
 
 ![Next.js](https://img.shields.io/badge/Next.js-16-black?logo=next.js)
 ![TypeScript](https://img.shields.io/badge/TypeScript-5-blue?logo=typescript)
