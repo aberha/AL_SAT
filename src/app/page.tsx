@@ -10,6 +10,7 @@ import DomainGrid from "@/components/DomainGrid";
 import QuizModal from "@/components/QuizModal";
 import StudyPlan from "@/components/StudyPlan";
 import RecentActivity from "@/components/RecentActivity";
+import PracticeExam from "@/components/PracticeExam";
 import { useDashboardState } from "@/hooks/useDashboardState";
 import { DomainMastery } from "@/types";
 import { getQuestionsByDomain, initializeQuestions } from "@/data/questions";
@@ -84,6 +85,12 @@ export default function Dashboard() {
 
   // Render content based on active section
   const renderContent = () => {
+    // Practice Exams page
+    if (activeSection === "practice") {
+      return <PracticeExam />;
+    }
+
+    // Other non-dashboard pages
     if (activeSection !== "dashboard") {
       return <ComingSoon title={getPageTitle()} />;
     }
