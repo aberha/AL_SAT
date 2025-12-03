@@ -122,17 +122,3 @@ With more time, I would add:
 3. **Adaptive question selection** based on weak domains
 4. **Mobile-optimized exam experience**
 5. **Textbook page** with lesson content
-
----
-
-## Time Spent
-
-Approximately 4 hours on:
-- Dashboard layout and components (~1.5h)
-- Practice exam feature (~1.5h)
-- OpenSAT API integration (~30m)
-- Styling and polish (~30m)
-
----
-
-Built as a coding assessment demonstrating product thinking and technical execution.
