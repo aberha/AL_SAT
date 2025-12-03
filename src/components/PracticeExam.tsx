@@ -284,16 +284,16 @@ export default function PracticeExam() {
     setExamState((prev) => ({ ...prev, currentIndex: 0 }));
   };
 
-  // Count stats
+  // Count stats - using Array.from to ensure proper reactivity with Map
   const examStats = useMemo(() => {
     let answered = 0;
     let flagged = 0;
-    examState.answers.forEach((a) => {
-      if (a.selectedChoiceId !== null) answered++;
-      if (a.flagged) flagged++;
+    Array.from(examState.answers.values()).forEach((a) => {
+      if (a && a.selectedChoiceId !== null) answered++;
+      if (a && a.flagged) flagged++;
     });
     return { answered, flagged };
-  }, [examState.answers]);
+  }, [examState.answers, examState.currentIndex]);
 
   if (isLoading) {
     return (
@@ -619,27 +619,34 @@ export default function PracticeExam() {
             <h3 className="text-sm font-medium text-[var(--foreground)] mb-4">Questions</h3>
             <div className="grid grid-cols-5 gap-2">
               {examState.questions.map((q, idx) => {
-                const answer = examState.answers.get(q.id)!;
+                const answer = examState.answers.get(q.id);
                 const isCurrent = idx === examState.currentIndex;
+                const hasAnswer = answer && answer.selectedChoiceId !== null;
+                const isFlagged = answer && answer.flagged;
+                const isCorrectAnswer = answer && answer.isCorrect === true;
+                const isIncorrectAnswer = answer && answer.selectedChoiceId !== null && answer.isCorrect === false;
                 
-                let bgColor = "bg-[var(--secondary)]";
+                let bgColor = "bg-[var(--secondary)] text-[var(--foreground)]";
                 if (isReview || examState.isSubmitted) {
-                  if (answer.isCorrect) bgColor = "bg-emerald-500 text-white";
-                  else if (answer.selectedChoiceId !== null) bgColor = "bg-red-500 text-white";
-                } else if (answer.selectedChoiceId !== null) {
+                  if (isCorrectAnswer) {
+                    bgColor = "bg-emerald-500 text-white";
+                  } else if (isIncorrectAnswer) {
+                    bgColor = "bg-red-500 text-white";
+                  }
+                } else if (hasAnswer) {
                   bgColor = "bg-[var(--primary)] text-white";
                 }
 
                 return (
                   <button
-                    key={q.id}
+                    key={`nav-${idx}`}
                     onClick={() => goToQuestion(idx)}
                     className={`w-full aspect-square rounded-lg text-sm font-medium transition-all relative ${bgColor} ${
                       isCurrent ? "ring-2 ring-[var(--primary)] ring-offset-2" : ""
                     }`}
                   >
                     {idx + 1}
-                    {answer.flagged && (
+                    {isFlagged && (
                       <Flag className="w-3 h-3 absolute -top-1 -right-1 text-amber-500" />
                     )}
                   </button>

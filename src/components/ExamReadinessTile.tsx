@@ -59,21 +59,21 @@ export default function ExamReadinessTile({
         </div>
         <div className="text-right">
           <p className="text-xs text-[var(--muted-foreground)] mb-1">Est. score range</p>
-          <p className="text-2xl font-bold text-[var(--foreground)]">{predictedScoreLow} – {predictedScoreHigh}</p>
+          <p className={`text-2xl font-bold ${colors.text}`}>{predictedScoreLow} – {predictedScoreHigh}</p>
         </div>
       </div>
 
       {/* Progress bar */}
       <div className="relative">
-        <div className="flex items-center justify-between mb-1 text-xs text-[var(--muted-foreground)]">
-          <span>0%</span>
-          <span>100%</span>
-        </div>
         <div className="h-3 bg-[var(--secondary)] rounded-full overflow-hidden">
           <div
             className={`h-full ${colors.bar} rounded-full transition-all duration-500`}
             style={{ width: `${percent}%` }}
           />
+        </div>
+        <div className="flex items-center justify-between mt-1 text-xs text-[var(--muted-foreground)]">
+          <span>0%</span>
+          <span>100%</span>
         </div>
       </div>
     </div>
