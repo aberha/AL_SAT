@@ -27,31 +27,121 @@ import {
 // Clean up LaTeX notation for display
 function cleanLatex(text: string): string {
   if (!text) return text;
-  return text
-    // Remove dollar sign delimiters (inline math)
+  
+  let cleaned = text;
+  
+  // Remove LaTeX delimiters first
+  cleaned = cleaned
     .replace(/\$([^$]+)\$/g, "$1")
-    // Remove \( \) delimiters (inline math)
     .replace(/\\\(([^)]+)\\\)/g, "$1")
-    // Remove \[ \] delimiters (display math)
-    .replace(/\\\[([^\]]+)\\\]/g, "$1")
-    // Clean up common LaTeX commands
-    .replace(/\\frac\{([^}]+)\}\{([^}]+)\}/g, "($1/$2)")
-    .replace(/\\sqrt\{([^}]+)\}/g, "√($1)")
+    .replace(/\\\[([^\]]+)\\\]/g, "$1");
+  
+  // Greek letters
+  const greekLetters: Record<string, string> = {
+    '\\pi': 'π',
+    '\\theta': 'θ',
+    '\\alpha': 'α',
+    '\\beta': 'β',
+    '\\gamma': 'γ',
+    '\\delta': 'δ',
+    '\\epsilon': 'ε',
+    '\\varepsilon': 'ε',
+    '\\zeta': 'ζ',
+    '\\eta': 'η',
+    '\\lambda': 'λ',
+    '\\mu': 'μ',
+    '\\nu': 'ν',
+    '\\xi': 'ξ',
+    '\\rho': 'ρ',
+    '\\sigma': 'σ',
+    '\\tau': 'τ',
+    '\\phi': 'φ',
+    '\\varphi': 'φ',
+    '\\chi': 'χ',
+    '\\psi': 'ψ',
+    '\\omega': 'ω',
+    '\\Gamma': 'Γ',
+    '\\Delta': 'Δ',
+    '\\Theta': 'Θ',
+    '\\Lambda': 'Λ',
+    '\\Xi': 'Ξ',
+    '\\Pi': 'Π',
+    '\\Sigma': 'Σ',
+    '\\Phi': 'Φ',
+    '\\Psi': 'Ψ',
+    '\\Omega': 'Ω',
+  };
+  
+  for (const [latex, unicode] of Object.entries(greekLetters)) {
+    cleaned = cleaned.replace(new RegExp(latex.replace(/\\/g, '\\\\'), 'g'), unicode);
+  }
+  
+  // Fractions
+  cleaned = cleaned.replace(/\\frac\{([^}]+)\}\{([^}]+)\}/g, (_, num, den) => {
+    return `(${cleanLatex(num)}/${cleanLatex(den)})`;
+  });
+  
+  // Square roots
+  cleaned = cleaned.replace(/\\sqrt\{([^}]+)\}/g, (_, content) => {
+    return `√(${cleanLatex(content)})`;
+  });
+  
+  // Superscripts (handle both {content} and single characters)
+  cleaned = cleaned.replace(/\^(\{([^}]+)\}|(\w))/g, (_, match, braced, single) => {
+    const exp = braced ? braced : single;
+    return `^${cleanLatex(exp)}`;
+  });
+  
+  // Subscripts
+  cleaned = cleaned.replace(/_(\{([^}]+)\}|(\w))/g, (_, match, braced, single) => {
+    const sub = braced ? braced : single;
+    return `_${cleanLatex(sub)}`;
+  });
+  
+  // Math operators and symbols
+  cleaned = cleaned
     .replace(/\\times/g, "×")
     .replace(/\\div/g, "÷")
     .replace(/\\pm/g, "±")
+    .replace(/\\mp/g, "∓")
     .replace(/\\leq/g, "≤")
     .replace(/\\geq/g, "≥")
     .replace(/\\neq/g, "≠")
+    .replace(/\\approx/g, "≈")
+    .replace(/\\equiv/g, "≡")
     .replace(/\\cdot/g, "·")
-    .replace(/\^(\{[^}]+\}|\w)/g, (_, exp) => `^${exp.replace(/[{}]/g, "")}`)
-    .replace(/_(\{[^}]+\}|\w)/g, (_, sub) => `_${sub.replace(/[{}]/g, "")}`)
-    .replace(/\\text\{([^}]+)\}/g, "$1")
+    .replace(/\\ast/g, "∗")
+    .replace(/\\star/g, "★")
+    .replace(/\\circ/g, "∘")
+    .replace(/\\infty/g, "∞")
+    .replace(/\\sum/g, "∑")
+    .replace(/\\prod/g, "∏")
+    .replace(/\\int/g, "∫")
+    .replace(/\\partial/g, "∂")
+    .replace(/\\nabla/g, "∇")
+    .replace(/\\ell/g, "ℓ")
+    .replace(/\\hbar/g, "ℏ");
+  
+  // Text commands
+  cleaned = cleaned.replace(/\\text\{([^}]+)\}/g, "$1");
+  
+  // Spacing commands
+  cleaned = cleaned
     .replace(/\\\\/g, " ")
     .replace(/\\,/g, " ")
     .replace(/\\;/g, " ")
     .replace(/\\quad/g, "  ")
-    .replace(/\\qquad/g, "    ");
+    .replace(/\\qquad/g, "    ")
+    .replace(/\\hspace\{[^}]+\}/g, " ")
+    .replace(/\\vspace\{[^}]+\}/g, " ");
+  
+  // Remove remaining backslashes before single letters (common LaTeX commands)
+  cleaned = cleaned.replace(/\\([a-zA-Z])/g, "$1");
+  
+  // Clean up any remaining braces that might be left
+  cleaned = cleaned.replace(/\{([^}]+)\}/g, "$1");
+  
+  return cleaned.trim();
 }
 
 // Exam configuration types
